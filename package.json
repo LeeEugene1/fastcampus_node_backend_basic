@@ -1,0 +1,16 @@
+{
+  "scripts": {
+    "test": "echo \"npm run test입력하면 스크립트출력\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LeeEugene1/fastcampus_node_backend_basic.git"
+  },
+  "bugs": {
+    "url": "https://github.com/LeeEugene1/fastcampus_node_backend_basic/issues"
+  },
+  "homepage": "https://github.com/LeeEugene1/fastcampus_node_backend_basic#readme",
+  "devDependencies": {
+    "prettier": "^2.3.2"
+  }
+}
