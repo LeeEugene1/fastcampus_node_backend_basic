@@ -18,6 +18,32 @@ npm, yarn과 같은 패키지매니저활용해 개발에 필요한 모듈 설�
 4. [.vscode] - settings.json
    vscode에게 prettier를 통해 포맷팅을 해라
 
+5. JSDOC
+   설정한 형식에 맞지않거나 빠진타입을 체크해줌
+
+```
+
+/**
+ * @typedef Post
+ * @property {string} id
+ * @property {string} title
+ * @property {string} content
+ */
+
+/** @type {Post[]} */
+const posts = [
+  {
+    id: '1',
+    title: 'my_first_post',
+    content: 'hello, world!',
+  },
+  {
+    id: '2',
+    title: 'second_post',
+  },
+]
+```
+
 # 프레임워크 없이 간단한 RESTful API server 만들기
 
 - 노드 작동원리 파악
