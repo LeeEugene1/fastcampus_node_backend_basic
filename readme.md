@@ -15,10 +15,7 @@ npm, yarn과 같은 패키지매니저활용해 개발에 필요한 모듈 설�
    `npm install --save-dev typescript`
    `//@ts-check`
 
-4. [.vscode] - settings.json
-   vscode에게 prettier를 통해 포맷팅을 해라
-
-5. JSDOC
+4. JSDOC
    설정한 형식에 맞지않거나 빠진타입을 체크해줌
 
 ```
