@@ -1,5 +1,7 @@
 //@ts-check
 
+// npm run server
+
 /**
  * 글(post) API
  *
@@ -11,70 +13,71 @@
 // 모듈을가져올땐 require이용
 // http 모듈로 서버만들기
 const http = require('http')
-// 내가만든 route가져오기
-const { routes } = require('./api')
-
-
-
-// const idRegEx = /^\/posts\/([a-zA-Z0-9-_]+)$/
+const { mainModule } = require('process')
+// 내가만든 모듈에서 route가져오기
+const { routes, posts } = require('./api')
 
 const server = http.createServer((req, res) => {
-  async function main(){
-    const route = routes.find()
-  }
-//   if (req.url === '/posts' && req.method === 'GET') {
-//     // res.end('LIST')
-//     const result = {
-//       posts: posts.map((post) => ({
-//         id: post.id,
-//         title: post.title,
-//       })),
-//       totalCount: posts.length,
-//     }
-//     res.statusCode = 200
-//     res.setHeader('Content-Type', 'application/json; encoding=utf-8')
-//     res.end(JSON.stringify(result))
-//     // console.log(result)
-//   } else if (idRegEx.test(req.url)) {
-//     //게시글보기(개별)
-//     const ex = idRegEx.exec(req.url)
-//     const id = ex[1]
-//     const post = posts.find((p) => p.id === id)
-//     if (post) {
-//       res.statusCode = 200
-//       res.setHeader('content-type', 'application/json; charset=utf-8')
-//       res.end(JSON.stringify(post))
-//     } else {
-//       res.statusCode = 400
-//       res.end('post not found')
-//     }
-//     // console.log(`postid : ${ex[1]}`)
-//     // console.log(idRegEx.exec(req.url))
-//     //[ '/posts/444', index: 0, input: '/posts/444', groups: undefined ]
-//     //만약 정규식중 알고싶은값만 ()를 넣으면, 예를들어 posts/뒤에오는애들
-//     // [ '/posts/444', '444', index: 0, input: '/posts/444', groups: undefined ]    res.end('Some Content of the post')
-//   } else if (req.url === '/posts' && req.method === 'POST') {
-//     //게시글입력
-//     //테스트(포스트만들기):http POST localhost:4000/posts title=foo content=bar --print=HB
-//     req.on('data', (data) => {
-//       const body = JSON.parse(data)
-//       posts.push({
-//         id: body.title.toLowerCase().replace(' ', '_'),
-//         title: body.title,
-//         content: body.conent,
-//       })
-//     })
-//     res.statusCode = 200
-//     res.end('Create post')
-//   } else {
-//     res.statusCode = 404
-//     res.end('NOT FOUND!!!!!')
-//   }
+  async function main() {
+    // 일치하는 라우트찾기
+    const route = routes.find(
+      (_route) =>
+        req.url &&
+        req.method &&
+        _route.url.test(req.url) &&
+        _route.method === req.method
+    )
 
-//   // console.log(req.url)
-//   res.statusCode = 200
-//   res.end('hi')
-// })
+    //route가 없을때
+    if (!req.url || !route) {
+      res.statusCode = 404
+      res.end('Not found1')
+      return
+    }
+
+    const regexResult = route.url.exec(req.url)
+
+    if (!regexResult) {
+      res.statusCode = 404
+      res.end('Not found2')
+      return
+    }
+
+    //post처리
+    /** @type {Object.<string, *> | undefined} */
+    const regBody =
+      //header가 json의 조건을 만족해야(&&) 프로미스가 실행되고 아니면(||) undefined
+      (req.headers['content-type'] === 'application/json' &&
+        (await new Promise((resolve, reject) => {
+          req.setEncoding('utf-8')
+          req.on('data', (data) => {
+            try {
+              resolve(JSON.parse(data))
+            } catch {
+              reject(new Error('파싱이 실패했음'))
+            }
+          })
+        }))) ||
+      undefined
+
+    // console.log(redBody) http POST localhost:8080/posts a=1 ==> {"a":"1"}
+
+    // route가 있을때
+    const result = await route.callback(regexResult, regBody)
+    res.statusCode = result.statusCode
+    // res.end(result.body)
+
+    //body가 {}일때랑 string일때 대응
+    if (typeof result.body === 'string') {
+      res.end(result.body)
+    } else {
+      res.setHeader('Content-type', 'application/json; charset=utf-8')
+      res.end(JSON.stringify(result.body))
+    }
+  }
+
+  main()
+})
 
 const PORT = 8080
 
