@@ -1,0 +1,7 @@
+{
+  "posts": [
+    { "id": "1", "title": "my first post", "content": "hi" },
+    { "id": "2", "title": "node basic", "content": "database with json" },
+    { "id": "foo", "title": "foo", "content": "cghadasda" }
+  ]
+}
